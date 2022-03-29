@@ -43,3 +43,6 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLUE_MUSHROOM_0CEC32903 }}
           action: "close"
+        env: # Add environment variables here
+            REACT_APP_STORAGESASTOKEN: ${{secrets.REACT_APP_STORAGESASTOKEN}}
+            REACT_APP_STORAGERESOURCENAME: ${{secrets.REACT_APP_STORAGERESOURCENAME}}
