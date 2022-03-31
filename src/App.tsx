@@ -1,15 +1,22 @@
 // ./src/App.tsx
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useReactToPrint } from "react-to-print";
 import Path from 'path';
-import uploadFileToBlob, { isStorageConfigured } from './azure-storage-blob';
+import uploadFileToBlob, { isStorageConfigured, getBlobsList } from './azure-storage-blob';
 
 const storageConfigured = isStorageConfigured();
 
 const App = (): JSX.Element => {
   // all blobs in container
   const [blobList, setBlobList] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setBlobList(await getBlobsList());
+    }
+    fetchData();
+  }, []);
 
   // current file to upload into container
   const [fileSelected, setFileSelected] = useState(null);
