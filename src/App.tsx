@@ -1,6 +1,7 @@
 // ./src/App.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useReactToPrint } from "react-to-print";
 import Path from 'path';
 import uploadFileToBlob, { isStorageConfigured } from './azure-storage-blob';
 
@@ -38,16 +39,24 @@ const App = (): JSX.Element => {
     setInputKey(Math.random().toString(36));
   };
 
+  const componentRef = useRef(null);
+  const onPrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
   // display form
   const DisplayForm = () => (
     <div>
       <input type="file" onChange={onFileChange} key={inputKey || ''} />
       <button type="submit" onClick={onFileUpload}>
-        Upload!
-          </button>
+        Upload
+      </button>
+      <button type="button" onClick={onPrint} style={{  marginLeft: "10px" }}>
+        Print
+      </button>
     </div>
   )
-
+  
   // display file name and image
   const DisplayImagesFromContainer = () => (
     <div>
@@ -56,10 +65,10 @@ const App = (): JSX.Element => {
         {blobList.map((item) => {
           return (
             <li key={item}>
-              <div>
+              <div style={{ pageBreakInside: "avoid"}}>
                 {Path.basename(item)}
                 <br />
-                <img src={item} alt={item} height="200" />
+                <img src={item} alt={item} style={{ maxWidth: "700px" }} />
               </div>
             </li>
           );
@@ -74,7 +83,9 @@ const App = (): JSX.Element => {
       {storageConfigured && !uploading && DisplayForm()}
       {storageConfigured && uploading && <div>Uploading</div>}
       <hr />
+      <div ref={componentRef}>
       {storageConfigured && blobList.length > 0 && DisplayImagesFromContainer()}
+      </div>
       {!storageConfigured && <div>Storage is not configured.</div>}
     </div>
   );

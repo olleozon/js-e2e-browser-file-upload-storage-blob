@@ -17,6 +17,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^4.0.3",
+    "react-to-print": "^2.14.5",
     "typescript": "~3.8.3"
   },
   "scripts": {
