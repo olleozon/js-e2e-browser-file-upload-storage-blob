@@ -7,8 +7,6 @@ import { useReactToPrint } from "react-to-print";
 import Path from 'path';
 import uploadFileToBlob, { getBlobsList } from './azure-storage-blob';
 
-const postTarget = 'https://rmt.rmtplus.se/v1/api/Import';
-
 const App = (): JSX.Element => {
   // all blobs in container
   const [blobList, setBlobList] = useState<string[]>([]);

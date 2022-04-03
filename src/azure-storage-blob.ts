@@ -4,19 +4,6 @@
 // THIS IS SAMPLE CODE ONLY - NOT MEANT FOR PRODUCTION USE
 import { BlobServiceClient, ContainerClient} from '@azure/storage-blob';
 
-const containerName = `tutorial-container`;
-const sasToken = process.env.REACT_APP_STORAGESASTOKEN;
-const storageAccountName = process.env.REACT_APP_STORAGERESOURCENAME;
-const storageHost = `${storageAccountName}.blob.core.windows.net`;
-// </snippet_package>
-
-// <snippet_isStorageConfigured>
-// Feature flag - disable storage feature to app if not configured
-export const isStorageConfigured = () => {
-  return (!storageAccountName || !sasToken) ? false : true;
-}
-// </snippet_isStorageConfigured>
-
 // <snippet_getBlobsInContainer>
 // return list of blobs in container to display
 const getBlobsInContainer = async (containerClient: ContainerClient, storageHost: string, containerName: string, sasToken: string) => {
