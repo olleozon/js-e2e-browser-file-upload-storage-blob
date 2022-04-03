@@ -5,27 +5,52 @@ import axios from 'axios'
 import { Button, InputGroup, Form } from 'react-bootstrap';
 import { useReactToPrint } from "react-to-print";
 import Path from 'path';
-import uploadFileToBlob, { isStorageConfigured, getBlobsList } from './azure-storage-blob';
+import uploadFileToBlob, { getBlobsList } from './azure-storage-blob';
 
-const storageConfigured = isStorageConfigured();
+const postTarget = 'https://rmt.rmtplus.se/v1/api/Import';
 
 const App = (): JSX.Element => {
   // all blobs in container
   const [blobList, setBlobList] = useState<string[]>([]);
   const [data, setData] = useState<any>(null);
   const [addedData, setAddedData] = useState<any>(null);
+  const [params, setParams] = useState<{ [key: string]: string }>({});
+
+  const storageConfigured = (): boolean => {
+    return (params.hasOwnProperty("url") && params.hasOwnProperty("host") && params.hasOwnProperty("container") && params.hasOwnProperty("key"));
+  };
 
   useEffect(() => {
-    const fetchList = async () => {
-      setBlobList(await getBlobsList());
+    const blobConfig =(params: string)=>{
+      const config: { [key: string]: string } = {};
+      if (params.length) {
+        const urlParams = new URLSearchParams(params);
+        const jPath = urlParams.get('j');
+        if (jPath != null) {
+          const urlPath = new URL(jPath);
+          if (urlPath != null) {
+            config.url = jPath;
+            config.host = urlPath.host;
+            if (urlPath.pathname.split('/').length > 1) config.container = urlPath.pathname.split('/')[1];
+          }
+        }
+        const jKey = urlParams.get('k');
+        if (jKey != null) {
+          config.key = jKey;
+        }
+      }
+      setParams(config);
+      return config;
     }
-    fetchList();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const jsonPath = urlParams.get('j');
-    const jsonKey = urlParams.get('k');
-    if (jsonPath && jsonPath.length > 0 && jsonKey && jsonKey.length > 0) {
-      axios.get(jsonPath + jsonKey)
+    const p: { [key: string]: string } = blobConfig(window.location.search);
+    if (p.url && p.host && p.container && p.key) {
+      const fetchList = async () => {
+        setBlobList(await getBlobsList(p.host, p.container, p.key));
+      }
+      fetchList();
+
+      axios.get(p.url + p.key)
       .then(response => {
           console.log(response.data);
           setData(response.data);
@@ -47,7 +72,14 @@ const App = (): JSX.Element => {
 
   const onSave = async (e: any) => {
     e.preventDefault();
+    setAddedData({ "key": params.key });
+    setAddedData({ "MREC_Id": data.MREC_Id });
     console.log(addedData);
+    // await axios.post(postTarget, addedData); // Needs CORS configuration
+    const aFile = new File([JSON.stringify(addedData)], 'arec-' + addedData.MREC_Id + '-answer.json', {type: 'application/json'});
+    await uploadFileToBlob(aFile, params.host, params.container, params.key);
+    const mFile = new File([JSON.stringify(data)], 'mrec-' + addedData.MREC_Id + '.json', {type: 'application/json'});
+    await uploadFileToBlob(mFile, params.host, params.container, params.key);
   }
 
   const onFormChange = (e: any) => {
@@ -58,16 +90,18 @@ const App = (): JSX.Element => {
   }
 
   const onFileUpload = async () => {
-    setUploading(true); // prepare UI
-    const blobsInContainer: string[] = await uploadFileToBlob(fileSelected);
+    if (storageConfigured()) {
+      setUploading(true); // prepare UI
+      const blobsInContainer: string[] = await uploadFileToBlob(fileSelected, params.host, params.container, params.key);
 
-    // prepare UI for results
-    setBlobList(blobsInContainer);
+      // prepare UI for results
+      setBlobList(blobsInContainer);
 
-    // reset state/form
-    setFileSelected(null);
-    setUploading(false);
-    setInputKey(Math.random().toString(36));
+      // reset state/form
+      setFileSelected(null);
+      setUploading(false);
+      setInputKey(Math.random().toString(36));
+    }
   };
 
   const componentRef = useRef(null);
@@ -113,7 +147,7 @@ const App = (): JSX.Element => {
   // display file name and image
   const DisplayImagesFromContainer = () => (
     <div>
-      <h2>Container items</h2>
+      <h2>Bilagor</h2>
       <ul>
         {blobList.map((item) => {
           return (
@@ -133,11 +167,11 @@ const App = (): JSX.Element => {
   return (
     <div style={{padding: "10px"}}>
       <h1>Korrigering revisionsanmärkning {data && data.REVI_Id} </h1>
-      {storageConfigured && !uploading && DisplayForm()}
-      {storageConfigured && uploading && <div>Uploading</div>}
+      {storageConfigured() && !uploading && DisplayForm()}
+      {storageConfigured() && uploading && <div>Uploading</div>}
       <hr />
       <div ref={componentRef}>
-      {storageConfigured && blobList.length > 0 && DisplayImagesFromContainer()}
+      {storageConfigured() && blobList.length > 0 && DisplayImagesFromContainer()}
       </div>
       {!storageConfigured && <div>Storage is not configured.</div>}
     </div>
@@ -145,5 +179,3 @@ const App = (): JSX.Element => {
 };
 
 export default App;
-
-
