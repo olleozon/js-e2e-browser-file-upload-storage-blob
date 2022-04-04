@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios'
 import { Alert, Button, InputGroup, Form } from 'react-bootstrap';
 import { useReactToPrint } from "react-to-print";
-import Path from 'path';
 import uploadFileToBlob, { getBlobsList } from './azure-storage-blob';
 
 const App = (): JSX.Element => {
