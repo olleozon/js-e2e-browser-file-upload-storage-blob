@@ -127,15 +127,15 @@ const App = (): JSX.Element => {
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
-            <InputGroup.Text>Signatur</InputGroup.Text>
-            <Form.Control as="input" name="RANM_Signatur" value={data && data.RANM_Signatur} onChange={onFormChange} />
-            <Button variant="outline-secondary" type="submit" onClick={onSave}>Spara</Button>
+            <InputGroup.Text>Klart datum</InputGroup.Text>
+            <Form.Control type="date" name="RANM_KlartDatum" value={data && data.RANM_KlartDatum} onChange={onFormChange} />
           </InputGroup>
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
-            <InputGroup.Text>Klart datum</InputGroup.Text>
-            <Form.Control type="date" name="RANM_KlartDatum" value={data && data.RANM_KlartDatum} onChange={onFormChange} />
+            <InputGroup.Text>Signatur</InputGroup.Text>
+            <Form.Control as="input" name="RANM_Signatur" value={data && data.RANM_Signatur} onChange={onFormChange} />
+            <Button variant="outline-secondary" type="submit" onClick={onSave}>Spara</Button>
           </InputGroup>
         </Form.Group>
         <Form.Group className="mb-3">
