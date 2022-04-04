@@ -13,6 +13,7 @@ const App = (): JSX.Element => {
   const [addedData, setAddedData] = useState<any>(null);
   const [attachment, setAttachment] = useState<string>("");
   const [storageUrl, setStorageUrl] = useState<URL | null>(null); // JSON data blob storage url with sas token querystring
+  const [success, setSuccess] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const storageConfigured = (): boolean => {
@@ -67,6 +68,7 @@ const App = (): JSX.Element => {
       await uploadFileToBlob(aFile, storageUrl);
       const mFile = new File([JSON.stringify(data)], 'mrec-' + addedData.MREC_Id + '.json', {type: 'application/json'});
       await uploadFileToBlob(mFile, storageUrl);
+      setSuccess("Ditt svar har skickats till oss, tack!");
     }
   }
 
@@ -179,6 +181,7 @@ const App = (): JSX.Element => {
     <div style={{padding: "10px"}}>
       <h1>Korrigering revisionsanmärkning {data && data.REVI_Id} </h1>
       {error.length > 0 && <Alert variant="danger">{error}</Alert>}
+      {success.length > 0 && <Alert variant="info">{success}</Alert>}
       {storageConfigured() && !uploading && DisplayForm()}
       {storageConfigured() && uploading && <div>Uploading</div>}
       <hr />
