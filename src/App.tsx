@@ -82,16 +82,14 @@ const App = (): JSX.Element => {
   const onFileUpload = async () => {
     if (storageConfigured()) {
       setUploading(true); // prepare UI
-      const blobsInContainer: string[] = await uploadFileToBlob(fileSelected, storageUrl);
-
-      // prepare UI for results
-      setBlobList(blobsInContainer);
-      if (blobsInContainer.length > 0) {
-        const attachment = blobsInContainer[blobsInContainer.length - 1];
+      const attachment: string = await uploadFileToBlob(fileSelected, storageUrl);
+      if (attachment.length > 0) {
         setAttachment(attachment);
         setData({ ...data, "INFO_PathFile": attachment });
         setAddedData((addedData: any) =>({ ...addedData, ...{"INFO_PathFile": attachment} }));
       }
+      // prepare UI for results
+      setBlobList(await getBlobsList(storageUrl));
       // reset state/form
       setFileSelected(null);
       setUploading(false);
@@ -127,29 +125,21 @@ const App = (): JSX.Element => {
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
-            <InputGroup.Text>Klart datum</InputGroup.Text>
-            <Form.Control type="date" name="RANM_KlartDatum" value={data && data.RANM_KlartDatum} onChange={onFormChange} />
-          </InputGroup>
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <InputGroup className="mb-3">
-            <InputGroup.Text>Signatur</InputGroup.Text>
-            <Form.Control as="input" name="RANM_Signatur" value={data && data.RANM_Signatur} onChange={onFormChange} />
-            <Button variant="outline-secondary" type="submit" onClick={onSave}>Spara</Button>
-          </InputGroup>
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <InputGroup className="mb-3">
-          <InputGroup.Text>Bilaga</InputGroup.Text>
+            <InputGroup.Text>Bilaga</InputGroup.Text>
             <Form.Control as="input" name="INFO_PathFile" value={attachment} onChange={onFormChange} />
             <Button variant="outline-secondary" type="button" onClick={onShow}>Visa</Button>
-          </InputGroup>
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <InputGroup className="mb-3">
             <Form.Control type="file" onChange={onFileChange} key={inputKey || ''} />
             <Button variant="outline-secondary" onClick={onFileUpload}>Ladda upp</Button>
             <Button variant="outline-secondary" onClick={onPrint}>Skriv ut</Button>
+          </InputGroup>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Klart datum</InputGroup.Text>
+            <Form.Control type="date" name="RANM_KlartDatum" value={data && data.RANM_KlartDatum} onChange={onFormChange} />
+            <InputGroup.Text>Signatur</InputGroup.Text>
+            <Form.Control as="input" name="RANM_Signatur" value={data && data.RANM_Signatur} onChange={onFormChange} />
+            <Button variant="outline-secondary" type="submit" onClick={onSave}>Spara</Button>
           </InputGroup>
         </Form.Group>
       </Form>

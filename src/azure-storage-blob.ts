@@ -59,11 +59,12 @@ export const getBlobsList = async (blobUrl: URL | null): Promise<string[]> => {
 }
 
 // <snippet_uploadFileToBlob>
-const uploadFileToBlob = async (file: File | null, blobUrl: URL | null): Promise<string[]> => {
-  if (!file) return [];
+const uploadFileToBlob = async (file: File | null, blobUrl: URL | null): Promise<string> => {
+  if (!file) return "";
   const containerClient = await createContainerClient(blobUrl);
   await createBlobInContainer(containerClient, file); // upload file
-  return getBlobsInContainer(containerClient, blobUrl); // get list of blobs in container
+  const blobAccess = getBlobAccess(blobUrl);
+  return `https://${blobAccess.storageHost}/${blobAccess.containerName}/${file.name}${blobAccess.sasToken}`;
 };
 // </snippet_uploadFileToBlob>
 
