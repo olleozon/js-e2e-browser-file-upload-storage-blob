@@ -68,7 +68,7 @@ const App = (): JSX.Element => {
       await uploadFileToBlob(aFile, storageUrl);
       const mFile = new File([JSON.stringify(data)], 'mrec-' + addedData.MREC_Id + '.json', {type: 'application/json'});
       await uploadFileToBlob(mFile, storageUrl);
-      setSuccess("Ditt svar har skickats till oss, tack!");
+      setSuccess("Thank you for sending your response!");
     }
   }
 
@@ -112,36 +112,38 @@ const App = (): JSX.Element => {
     <div>
       <Form>
         <Form.Group className="mb-3">
-          <Form.Label>Anmärkningstyp</Form.Label>
+          <Form.Label>Audit type</Form.Label>
           <Form.Control as="input" type="input" disabled value={data && data.REVI_Typ} />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Anmärkning</Form.Label>
+          <Form.Label>Extent/Scope</Form.Label>
           <Form.Control as="textarea" disabled value={data && data.REVI_Memo} />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Korrigerande åtgärd</Form.Label>
-          <Form.Control as="textarea" name="RANM_Korrigering" value={data && data.RANM_Korrigering} onChange={onFormChange} />
+          <Form.Label>Verification</Form.Label>
+          <Form.Control as="textarea" name="REVI_Verifiering" value={data && data.REVI_Verifiering} onChange={onFormChange} />
+          <Button variant="outline-secondary" type="submit" onClick={onSave}>Save</Button>
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
-            <InputGroup.Text>Bilaga</InputGroup.Text>
+            <InputGroup.Text>Attachment</InputGroup.Text>
             <Form.Control as="input" name="INFO_PathFile" value={attachment} onChange={onFormChange} />
-            <Button variant="outline-secondary" type="button" onClick={onShow}>Visa</Button>
+            <Button variant="outline-secondary" type="button" onClick={onShow}>Show</Button>
             <Form.Control type="file" onChange={onFileChange} key={inputKey || ''} />
-            <Button variant="outline-secondary" onClick={onFileUpload}>Ladda upp</Button>
-            <Button variant="outline-secondary" onClick={onPrint}>Skriv ut</Button>
+            <Button variant="outline-secondary" onClick={onFileUpload}>Upload</Button>
+            <Button variant="outline-secondary" onClick={onPrint}>Print</Button>
           </InputGroup>
         </Form.Group>
+{/*    
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
             <InputGroup.Text>Klart datum</InputGroup.Text>
             <Form.Control type="date" name="RANM_KlartDatum" value={data && data.RANM_KlartDatum} onChange={onFormChange} />
             <InputGroup.Text>Signatur</InputGroup.Text>
             <Form.Control as="input" name="RANM_Signatur" value={data && data.RANM_Signatur} onChange={onFormChange} />
-            <Button variant="outline-secondary" type="submit" onClick={onSave}>Spara</Button>
           </InputGroup>
         </Form.Group>
+ */}      
       </Form>
     </div>
   )
@@ -149,7 +151,7 @@ const App = (): JSX.Element => {
   // display file name and image
   const DisplayImagesFromContainer = () => (
     <div>
-      <h2>Bilagor</h2>
+      <h2>Attachments</h2>
       <ul>
         {blobList.map((item) => {
           return (
@@ -169,7 +171,7 @@ const App = (): JSX.Element => {
 
   return (
     <div style={{padding: "10px"}}>
-      <h1>Korrigering revisionsanmärkning {data && data.REVI_Id} </h1>
+      <h1>Verifying revision {data && data.REVI_Id} </h1>
       {error.length > 0 && <Alert variant="danger">{error}</Alert>}
       {success.length > 0 && <Alert variant="info">{success}</Alert>}
       {storageConfigured() && !uploading && DisplayForm()}
