@@ -45,7 +45,7 @@ const App = (): JSX.Element => {
   }, []);
 
   // current file to upload into container
-  const [fileSelected, setFileSelected] = useState(null);
+  const [fileSelected, setFileSelected] = useState<File | null>(null);
 
   // UI/form management
   const [uploading, setUploading] = useState(false);
@@ -86,7 +86,7 @@ const App = (): JSX.Element => {
   const onFileUpload = async () => {
     if (storageConfigured()) {
       setUploading(true); // prepare UI
-      const attachment: string = await uploadFileToBlob(fileSelected, storageUrl);
+      const attachment: string = await uploadFileToBlob(fileSelected, storageUrl, 'm' + addedData.MREC_Id);
       if (attachment.length > 0) {
         setAttachment(attachment);
         setData({ ...data, "HIST_PathFile": attachment });

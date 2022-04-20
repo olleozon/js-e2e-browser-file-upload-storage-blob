@@ -44,8 +44,9 @@ const getBlobsInContainer = async (containerClient: ContainerClient, blobUrl: UR
 // </snippet_getBlobsInContainer>
 
 // <snippet_createBlobInContainer>
-const createBlobInContainer = async (containerClient: ContainerClient, file: File) => {
-  const blobClient = containerClient.getBlockBlobClient(file.name);
+const createBlobInContainer = async (containerClient: ContainerClient, file: File, folder: string = "") => {
+  const fileUrl: string = (folder.length > 0) ? folder + "/" + file.name : file.name;
+  const blobClient = containerClient.getBlockBlobClient(fileUrl);
   // Set mimetype as determined from browser with file upload control
   const options = { blobHTTPHeaders: { blobContentType: file.type } };
   await blobClient.uploadData(file, options); // upload file
@@ -59,10 +60,10 @@ export const getBlobsList = async (blobUrl: URL | null): Promise<string[]> => {
 }
 
 // <snippet_uploadFileToBlob>
-const uploadFileToBlob = async (file: File | null, blobUrl: URL | null): Promise<string> => {
+const uploadFileToBlob = async (file: File | null, blobUrl: URL | null, folder: string = ""): Promise<string> => {
   if (!file) return "";
   const containerClient = await createContainerClient(blobUrl);
-  await createBlobInContainer(containerClient, file); // upload file
+  await createBlobInContainer(containerClient, file, folder); // upload file
   const blobAccess = getBlobAccess(blobUrl);
   return `https://${blobAccess.storageHost}/${blobAccess.containerName}/${file.name}${blobAccess.sasToken}`;
 };
