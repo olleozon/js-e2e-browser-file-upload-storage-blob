@@ -56,7 +56,7 @@ const App = (): JSX.Element => {
   };
 
   const onShowDocument = (e: any) => {
-    if (data && data.INFO && data.INFO.length > 0 && data.INFO[0].INFO_PathFile.length > 0) window.open(data.INFO[0].INFO_PathFile, "_blank");
+    if (data && data.INFO && data.INFO.length > 0 && data.INFO[0].INFO_PathFile.length > 0 && addedData && addedData.sas) window.open(data.INFO[0].INFO_PathFile + addedData.sas, "_blank");
   }
 
   const onShow = (e: any) => {
