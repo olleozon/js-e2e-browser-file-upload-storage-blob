@@ -65,7 +65,8 @@ const uploadFileToBlob = async (file: File | null, blobUrl: URL | null, folder: 
   const containerClient = await createContainerClient(blobUrl);
   await createBlobInContainer(containerClient, file, folder); // upload file
   const blobAccess = getBlobAccess(blobUrl);
-  return `https://${blobAccess.storageHost}/${blobAccess.containerName}/${file.name}${blobAccess.sasToken}`;
+  const fileUrl: string = (folder.length > 0) ? folder + "/" + file.name : file.name;
+  return `https://${blobAccess.storageHost}/${blobAccess.containerName}/${fileUrl}${blobAccess.sasToken}`;
 };
 // </snippet_uploadFileToBlob>
 
