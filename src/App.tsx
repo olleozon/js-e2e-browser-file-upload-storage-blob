@@ -31,7 +31,7 @@ const App = (): JSX.Element => {
             console.log(response.data);
             setData(response.data);
             if (response.data.MREC_Id) setAddedData({"MREC_Id": response.data.MREC_Id, "sas": jsonUrl.search });
-            if (response.data.INFO_PathFile) setAttachment(response.data.INFO_PathFile);
+            if (response.data.HIST_PathFile) setAttachment(response.data.HIST_PathFile);
             // Test: Show pictures in blob 
             const fetchList = async () => {
               setBlobList(await getBlobsList(jsonUrl));
@@ -55,6 +55,10 @@ const App = (): JSX.Element => {
     setFileSelected(event.target.files[0]); // capture file into state
   };
 
+  const onShowDocument = (e: any) => {
+    if (data && data.INFO && data.INFO.length > 0 && data.INFO[0].INFO_PathFile.length > 0) window.open(data.INFO[0].INFO_PathFile, "_blank");
+  }
+
   const onShow = (e: any) => {
     if (attachment.length > 0) window.open(attachment, "_blank");
   }
@@ -64,9 +68,9 @@ const App = (): JSX.Element => {
     if (addedData && addedData.MREC_Id && addedData.sas) {
       console.log(addedData);
       // await axios.post(postTarget, addedData); // Needs CORS configuration
-      const aFile = new File([JSON.stringify(addedData)], 'arec-' + addedData.MREC_Id + '-answer.json', {type: 'application/json'});
+      const aFile = new File([JSON.stringify(addedData)], 'm' + addedData.MREC_Id + '/arec-' + addedData.MREC_Id + '-answer.json', {type: 'application/json'});
       await uploadFileToBlob(aFile, storageUrl);
-      const mFile = new File([JSON.stringify(data)], 'mrec-' + addedData.MREC_Id + '.json', {type: 'application/json'});
+      const mFile = new File([JSON.stringify(data)], 'm' + addedData.MREC_Id + '/mrec-' + addedData.MREC_Id + '.json', {type: 'application/json'});
       await uploadFileToBlob(mFile, storageUrl);
       setSuccess("Thank you for sending your response!");
     }
@@ -85,8 +89,8 @@ const App = (): JSX.Element => {
       const attachment: string = await uploadFileToBlob(fileSelected, storageUrl);
       if (attachment.length > 0) {
         setAttachment(attachment);
-        setData({ ...data, "INFO_PathFile": attachment });
-        setAddedData((addedData: any) =>({ ...addedData, ...{"INFO_PathFile": attachment} }));
+        setData({ ...data, "HIST_PathFile": attachment });
+        setAddedData((addedData: any) =>({ ...addedData, ...{"HIST_PathFile": attachment} }));
       }
       // prepare UI for results
       setBlobList(await getBlobsList(storageUrl));
@@ -120,14 +124,23 @@ const App = (): JSX.Element => {
           <Form.Control as="textarea" disabled value={data && data.REVI_Memo} />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Verification</Form.Label>
-          <Form.Control as="textarea" name="REVI_Verifiering" value={data && data.REVI_Verifiering} onChange={onFormChange} />
-          <Button variant="outline-secondary" type="submit" onClick={onSave}>Save</Button>
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Document</InputGroup.Text>
+            <Form.Control as="input" type="input" disabled value={data && data.INFO && data.INFO.length > 0 && data.INFO[0].INFO_PathFileName} />
+            <Button variant="outline-secondary" type="button" onClick={onShowDocument}>Show</Button>
+          </InputGroup>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Verification</InputGroup.Text>
+            <Form.Control as="textarea" name="REVI_Verifiering" value={data && data.REVI_Verifiering} onChange={onFormChange} />
+            <Button variant="outline-secondary" type="submit" onClick={onSave}>Save</Button>
+          </InputGroup>
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup className="mb-3">
             <InputGroup.Text>Attachment</InputGroup.Text>
-            <Form.Control as="input" name="INFO_PathFile" value={attachment} onChange={onFormChange} />
+            <Form.Control as="input" name="HIST_PathFile" value={attachment} onChange={onFormChange} />
             <Button variant="outline-secondary" type="button" onClick={onShow}>Show</Button>
             <Form.Control type="file" onChange={onFileChange} key={inputKey || ''} />
             <Button variant="outline-secondary" onClick={onFileUpload}>Upload</Button>
