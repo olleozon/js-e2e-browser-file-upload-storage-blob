@@ -89,8 +89,8 @@ const App = (): JSX.Element => {
       const attachment: string = await uploadFileToBlob(fileSelected, storageUrl, 'm' + addedData.MREC_Id);
       if (attachment.length > 0) {
         setAttachment(attachment);
-        setData({ ...data, "HIST_PathFile": attachment });
-        setAddedData((addedData: any) =>({ ...addedData, ...{"HIST_PathFile": attachment} }));
+        setData({ ...data, ...{"HIST": [{"HIST_PathFile": attachment}]}});
+        setAddedData((addedData: any) =>({ ...addedData, ...{"HIST": [{"HIST_PathFile": attachment}]} }));
       }
       // prepare UI for results
       setBlobList(await getBlobsList(storageUrl));
